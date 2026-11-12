@@ -8,8 +8,8 @@ Un jeu de conduite en pixel art : une petite voiture sur des collines sans fin, 
 
 Avant chaque partie, tu passes au garage :
 
-- **Terrain** : Prairie (dès le début), Désert, Neige (ça glisse) et Lune (on flotte).
-- **Voiture** : Jeep (équilibrée, dès le début), Monster (grosses roues, grimpe tout) et Bolide (très rapide, boit beaucoup).
+- **13 mondes** : Prairie (dès le début), Désert, Neige (ça glisse), Lune (on flotte), Forêt, Plage, Jungle, Marais (boueux), Canyon (pentes raides), Volcan, Mars (gravité faible), Cristaux et Ville la nuit, chacun avec son ciel et son décor.
+- **12 véhicules** : Jeep (équilibrée, dès le début), Monster, Bolide, Quad, Moto, Buggy, Tracteur, Van, Camion, Rallye, Rover (presque sans essence) et Hot-rod (le plus rapide).
 - **Améliorations**, pour chaque voiture : **moteur**, **pneus** (adhérence) et **réservoir**, sur 5 niveaux.
 
 Terrains, voitures et améliorations s'achètent avec les **pièces** ramassées en course.

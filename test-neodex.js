@@ -10,6 +10,12 @@ module.exports = async ({ pj, sleep }) => {
   await shot('0-garage');
   await key('ArrowUp'); await key('ArrowUp'); await key('ArrowUp'); await key('ArrowUp'); await key('ArrowRight'); await sleep(400); await shot('1-monster');
   if (!/voiture Monster, .*à débloquer/.test(await label())) throw new Error('le Monster devait être à débloquer : « ' + (await label()) + ' »');
+  if (process.env.NEO_SHOTS) {  // chaque monde puis chaque véhicule, au garage
+    await key('ArrowLeft'); await key('ArrowUp'); for (let i = 1; i <= 13; i++) { await key('ArrowRight'); await sleep(120); await shot('m' + i); }
+    await key('ArrowDown'); for (let i = 1; i <= 12; i++) { await key('ArrowRight'); await sleep(120); await shot('v' + i); }
+    if (!/terrain Prairie, voiture Jeep/.test(await label())) throw new Error('13 mondes et 12 véhicules attendus : « ' + (await label()) + ' »');
+    await key('ArrowRight');  // revient sur le Monster, comme sans images
+  }
   await key('ArrowLeft'); for (let i = 0; i < 4; i++) await key('ArrowDown'); await key('Enter'); await sleep(300);
   await ev('keydown', 'ArrowRight'); await sleep(3000); await shot('2-route');
   await sleep(4000); await shot('3-plus-loin');

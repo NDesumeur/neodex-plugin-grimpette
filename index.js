@@ -325,16 +325,49 @@ const GR = {W: 240, H: 150, HUD: 12, PXM: 10};
 const renew = (old, o) => { if (!old) return o; for (const k of Object.keys(old)) if (k !== 'raf') delete old[k]; return Object.assign(old, o); };
 // les terrains : forme des collines (f : étirement, amp : hauteur max), gravité, adhérence ; les trois premiers se débloquent avec les pièces
 const GR_TERR = [
-  {id: 'prairie', name: 'Prairie', price: 0, f: 1, amp: 38, g: .12, grip: 1, sky: ['#5a8ad8', '#7aa8e8', '#9ac0f0'], hill: '#5a9a6a', grass: '#5ac03a', grass2: '#3a8a2a', dirt: '#8a5a32', dirt2: '#7a4a28'},
-  {id: 'desert', name: 'Désert', price: 150, f: 1.8, amp: 52, g: .12, grip: .9, sky: ['#d88a4a', '#e8a85a', '#f0c88a'], hill: '#c88a5a', grass: '#e8c86a', grass2: '#c8a84a', dirt: '#c89a5a', dirt2: '#b88a4a'},
-  {id: 'neige', name: 'Neige', price: 400, f: .8, amp: 46, g: .12, grip: .6, sky: ['#4a5a8a', '#6a7aa8', '#8a9ac8'], hill: '#9aaac8', grass: '#f0f4ff', grass2: '#c8d4f0', dirt: '#6a6a7a', dirt2: '#5a5a6a'},
-  {id: 'lune', name: 'Lune', price: 800, f: .7, amp: 44, g: .05, grip: .8, sky: ['#05030c', '#0a0618', '#120c24'], hill: '#2a2a3a', grass: '#c8c8d0', grass2: '#8a8a9a', dirt: '#6a6a78', dirt2: '#4a4a58', stars: true},
+  {id: 'prairie', name: 'Prairie', price: 0, f: 1, amp: 38, g: .12, grip: 1, sky: ['#5a8ad8', '#7aa8e8', '#9ac0f0'], hill: '#5a9a6a', grass: '#5ac03a', grass2: '#3a8a2a', dirt: '#8a5a32', dirt2: '#7a4a28', deco: 'tree'},
+  {id: 'desert', name: 'Désert', price: 150, f: 1.8, amp: 52, g: .12, grip: .9, sky: ['#d88a4a', '#e8a85a', '#f0c88a'], hill: '#c88a5a', grass: '#e8c86a', grass2: '#c8a84a', dirt: '#c89a5a', dirt2: '#b88a4a', deco: 'cactus'},
+  {id: 'neige', name: 'Neige', price: 400, f: .8, amp: 46, g: .12, grip: .6, sky: ['#4a5a8a', '#6a7aa8', '#8a9ac8'], hill: '#9aaac8', grass: '#f0f4ff', grass2: '#c8d4f0', dirt: '#6a6a7a', dirt2: '#5a5a6a', deco: 'pine', dp: {g: '#3a6a5a', G: '#f0f4ff', n: '#2a4a44'}},
+  {id: 'lune', name: 'Lune', price: 800, f: .7, amp: 44, g: .05, grip: .8, sky: ['#05030c', '#0a0618', '#120c24'], hill: '#2a2a3a', grass: '#c8c8d0', grass2: '#8a8a9a', dirt: '#6a6a78', dirt2: '#4a4a58', stars: true, deco: 'rock', dp: {R: '#9a9aa8', r: '#6a6a78', d: '#4a4a58'}},
+  {id: 'foret', name: 'Forêt', price: 250, f: 1.1, amp: 42, g: .12, grip: .95, sky: ['#4a7a9a', '#6a9aaa', '#9ac0b8'], hill: '#2a5a3a', grass: '#4a9a32', grass2: '#2a6a22', dirt: '#5a3a22', dirt2: '#4a2e1a', deco: 'pine'},
+  {id: 'plage', name: 'Plage', price: 300, f: 1.4, amp: 30, g: .12, grip: .85, sky: ['#3a9ae8', '#6ab8f0', '#a8dcf8'], hill: '#2a8ac8', grass: '#f8e0a0', grass2: '#e8c878', dirt: '#e0c080', dirt2: '#c8a868', deco: 'palm', sea: true},
+  {id: 'jungle', name: 'Jungle', price: 500, f: .75, amp: 48, g: .12, grip: .9, sky: ['#2a6a4a', '#3a8a5a', '#6aaa6a'], hill: '#1e4a2a', grass: '#3ab82a', grass2: '#1e7a1a', dirt: '#4a3018', dirt2: '#3a2410', deco: 'tree', dp: {g: '#2a8a2a', G: '#5ad03a', n: '#1a5a1a'}},
+  {id: 'marais', name: 'Marais', price: 600, f: .9, amp: 34, g: .12, grip: .7, sky: ['#4a5a4a', '#6a7a5a', '#8a9a6a'], hill: '#3a4a32', grass: '#6a7a3a', grass2: '#4a5a2a', dirt: '#3a3a2a', dirt2: '#2a2a1e', deco: 'reed'},
+  {id: 'canyon', name: 'Canyon', price: 700, f: 2.2, amp: 60, g: .12, grip: .95, sky: ['#e86a3a', '#f08a4a', '#f8b878'], hill: '#a84a2a', grass: '#d8743a', grass2: '#b85a2a', dirt: '#a84a2a', dirt2: '#8a3a20', deco: 'rock', dp: {R: '#d8743a', r: '#a84a2a', d: '#7a3018'}},
+  {id: 'volcan', name: 'Volcan', price: 1000, f: .9, amp: 54, g: .12, grip: .95, sky: ['#1a0a10', '#3a1018', '#6a1a1a'], hill: '#2a1a1e', grass: '#ff6a1a', grass2: '#c83a10', dirt: '#2a2228', dirt2: '#3a2a30', deco: 'rock', dp: {R: '#5a4a50', r: '#3a2e34', d: '#ff6a1a'}, embers: true},
+  {id: 'mars', name: 'Mars', price: 1200, f: .8, amp: 50, g: .07, grip: .85, sky: ['#3a1a1a', '#6a2a1e', '#a8502a'], hill: '#7a3420', grass: '#c86a3a', grass2: '#a8502a', dirt: '#8a3a22', dirt2: '#6a2a18', stars: true, deco: 'rock', dp: {R: '#c86a3a', r: '#8a3a22', d: '#5a2412'}},
+  {id: 'cristaux', name: 'Cristaux', price: 1500, f: .6, amp: 50, g: .1, grip: .75, sky: ['#1a1038', '#2a1a58', '#4a2a7a'], hill: '#2a1a4a', grass: '#b48cff', grass2: '#8a5ad8', dirt: '#3a2a5a', dirt2: '#2a1e44', stars: true, deco: 'crystal'},
+  {id: 'ville', name: 'Ville la nuit', price: 1800, f: 1.5, amp: 36, g: .12, grip: 1, sky: ['#0a0a1e', '#14143a', '#2a1e4a'], hill: '#14142a', grass: '#5a5a6a', grass2: '#ffd84a', dirt: '#2a2a34', dirt2: '#22222a', stars: true, deco: 'lamp', city: true},
 ];
+// le décor posé sur le sol de chaque monde, dessiné à la main (k : contour ; les autres lettres viennent de dp, ou des couleurs par défaut)
+const GR_DECO = {
+  tree: ['...kkkkk...', '..kGGGggk..', '.kGGgggggk.', 'kGGgggggggk', 'kGggggggnnk', 'kgggggggnnk', '.kgggggnnk.', '..kkgnnkk..', '....kbk....', '....kbk....', '....kbk....', '...kbbbk...'],
+  pine: ['....k....', '...kGk...', '...kgk...', '..kGggk..', '..kgggk..', '.kGgggnk.', '..kgggk..', '.kGgggnk.', 'kGgggggnk', 'kkkkbkkkk', '....b....', '....b....'],
+  cactus: ['....kk....', '...kgGk...', '.k.kgGk...', 'kGkkgGk...', 'kGgkgGk.k.', '.kggggkkGk', '..kkgGggk.', '...kgGkk..', '...kgGk...', '...kgGk...', '...kgGk...'],
+  palm: ['..kk...kk..', '.kGGk.kGGk.', 'kGg.kkk.gGk', 'k...kgk...k', '...kGgGk...', '..kg.b.gk..', '.....bk....', '.....bk....', '....kbk....', '....kbk....', '....kbk....', '...kbk.....', '...kbk.....'],
+  rock: ['...kkkk...', '..kRRrrk..', '.kRRrrrdk.', 'kRrrrrrddk', 'krrrrrdddk', 'kkkkkkkkkk'],
+  crystal: ['....k......', '...kWk.....', '...kWck....', '..kWWcck...', '..kWccck.k.', '..kWccckkWk', '.kWWccckWck', '.kWcccckWck', 'kkkkkkkkkkk'],
+  reed: ['.k....k.', 'kbk..kbk', 'kbk..kbk', 'kbk..kbk', '.g....g.', '.g..k.g.', '.g.kbkg.', '.g.kbkg.', '.g..g.g.', '.gg.g.g.', '..g.gg..'],
+  lamp: ['kkkkk.', 'kyyyyk', '.kkkk.', '..k...', '..k...', '..k...', '..k...', '..k...', '..k...', '..k...', '..k...', '.kkk..'],
+};
+const GR_DPAL = {k: '#1a1018', g: '#3a8a2a', G: '#6ac04a', n: '#2a6a22', b: '#6a4a2a', R: '#a89a88', r: '#7a6e60', d: '#4a4038', W: '#e8d8ff', c: '#a87ae8', y: '#fff0a0'};
+const grDecoImg = {};
+const grDecoArt = T => grDecoImg[T.id] ??= PXK.art(GR_DECO[T.deco], {...GR_DPAL, ...(T.deco === 'reed' ? {g: '#5a7a3a', b: '#6a4a2a'} : {}), ...(T.dp || {})});
+const grHash = n => { const x = Math.sin(n * 91.7 + 13.1) * 43758.5453; return x - Math.floor(x); };
 // les voitures : empattement L, rayon des roues R, vitesse, reprise, consommation, couleurs
 const GR_CARS = [
   {id: 'jeep', name: 'Jeep', price: 0, L: 22, R: 5, speed: 2.6, acc: .05, burn: 1, body: ['#d83a3a', '#ff6a5a'], desc: 'équilibrée'},
   {id: 'monster', name: 'Monster', price: 250, L: 24, R: 7, speed: 2.3, acc: .066, burn: 1.15, body: ['#3a8a3a', '#6ac05a'], desc: 'grosses roues, grimpe tout'},
   {id: 'bolide', name: 'Bolide', price: 600, L: 24, R: 4, speed: 3.5, acc: .056, burn: 1.35, body: ['#3a5ad8', '#6a8aff'], desc: 'très rapide, boit beaucoup'},
+  {id: 'quad', name: 'Quad', price: 150, L: 18, R: 5, speed: 2.4, acc: .058, burn: .8, body: ['#e8a01a', '#ffd04a'], desc: 'petit, agile et sobre'},
+  {id: 'moto', name: 'Moto', price: 350, L: 18, R: 6, speed: 3, acc: .06, burn: .75, body: ['#d83a8a', '#ff7ac0'], desc: 'légère, se cabre vite'},
+  {id: 'buggy', name: 'Buggy', price: 450, L: 22, R: 6, speed: 2.9, acc: .062, burn: 1.05, body: ['#e86a1a', '#ffa04a'], desc: 'arceau et grosses suspensions'},
+  {id: 'tracteur', name: 'Tracteur', price: 500, L: 20, R: 7, speed: 1.8, acc: .08, burn: .9, body: ['#2a8a3a', '#5ac05a'], desc: 'lent mais grimpe tout'},
+  {id: 'van', name: 'Van', price: 550, L: 26, R: 5, speed: 2.5, acc: .05, burn: 1.1, body: ['#e8e4ec', '#ffffff'], desc: 'long et stable'},
+  {id: 'camion', name: 'Camion', price: 700, L: 30, R: 6, speed: 2.1, acc: .055, burn: 1.5, body: ['#c83a2a', '#e86a4a'], desc: 'très long, ne se retourne pas'},
+  {id: 'rallye', name: 'Rallye', price: 900, L: 24, R: 5, speed: 3.3, acc: .07, burn: 1.25, body: ['#3ab8d8', '#7ae0f8'], desc: 'vive, rapide, avec un aileron'},
+  {id: 'rover', name: 'Rover', price: 1200, L: 26, R: 6, speed: 2.2, acc: .06, burn: .55, body: ['#a8a8b8', '#d8d8e8'], desc: 'presque sans essence'},
+  {id: 'hotrod', name: 'Hot-rod', price: 1500, L: 24, R: 5, speed: 3.8, acc: .062, burn: 1.5, body: ['#1a1a28', '#3a3a50'], desc: 'la plus rapide de toutes'},
 ];
 const GR_UP = [['moteur', 'Moteur'], ['pneus', 'Pneus'], ['reservoir', 'Réservoir']];
 const GR_COST = [20, 50, 110, 220, 400];
@@ -408,9 +441,18 @@ const GR_BODY = {
   jeep: ['....kkkkkk..............', '...kwwwwwwk.............', '..kwbbkbbbwk............', '..kwbbkbbbbwk...........', 'kkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrrrrrrrrk.', 'krRRRRRRRRRRRRRRRRRRyyk.', 'krrrrrrrrrrrrrrrrrrrrrk.', '.kddkkkkkkkkkkkkkkddk...', '..kk..............kk....'],
   monster: ['.....kkkkkkk..............', '....kwwwwwwwk.............', '...kwbbbkbbbwk............', '..kwbbbbkbbbbwk...........', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrrrrrrrrrk..', 'krRRRRRRRRRRRRRRRRRRRyyk..', 'krrrrrrrrrrrrrrrrrrrrrrk..', 'kkkkkkkkkkkkkkkkkkkkkkkk..', '..kdk.............kdk.....', '..kdk.............kdk.....'],
   bolide: ['........kkkkkk............', '......kkwwwwbbk...........', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrrrrrrrrrkk.', 'kRRRRRRRRRRRRRRRRRRRRRRyyk', 'krrrrrrrrrrrrrrrrrrrrrrrrk', '.kkkkkkkkkkkkkkkkkkkkkkkk.'],
+  quad: ['..............kk....', '.............kck....', 'kkkkkkkkkkkkkkkkkkk.', 'krRRRRRRRRRRRRRRRRyk', 'krrrrrrrrrrrrrrrrrrk', '.kkddkkkkkkkkkddkk..'],
+  moto: ['.............kk.....', '............kck.....', 'kkkkk......kkk......', 'krrrrkkkkkkrrrk.....', '.kRRRRRRRRRRRRRyk...', '..kkdddkkkkddkkk....'],
+  buggy: ['....kkkkkkkkkk..........', '....kc.......ck.........', '...kc.........ck........', 'kkkkkkkkkkkkkkkkkkkkkkk.', 'krRRRRRRRRRRRRRRRRRRRryk', '.krrrrrrrrrrrrrrrrrrrrk.', '..kkdkkkkkkkkkkkkkdkk...'],
+  tracteur: ['......kkkkkk........', '......kwwwwk...kk...', '......kwbbwk...kk...', 'kkkkkkkkkkkkkkkkkk..', 'krRRRRRRRRRRRRRRRyk.', 'krrrrrrrrrrrrrrrrrk.', '.kkkkkkkkkkkkkkkkk..'],
+  van: ['..kkkkkkkkkkkkkkkkkkkk.....', '.kwwwwkwwwwkwwwwkwwwwbk....', 'kwwwwwkwwwwkwwwwkwwwbbk....', 'krrrrrrrrrrrrrrrrrrrrrrkk..', 'kRRRRRRRRRRRRRRRRRRRRRRRyk.', 'krrrrrrrrrrrrrrrrrrrrrrrrk.', '.kkdkkkkkkkkkkkkkkkkkkdkk..'],
+  camion: ['....................kkkkkkk..', '....................kwwwwbk..', '....................kwwwbbk..', 'kkkkkkkkkkkkkkkkkkkkkkkkkkkk.', 'kggggggggggggggggggkrrrrrrrk.', 'kgGgGgGgGgGgGgGgGgkrRRRRRRyk', 'kggggggggggggggggggkrrrrrrrrk', 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkk', '..kdk..................kdk...'],
+  rallye: ['k...........kkkkkk.......', 'kk........kkwwwwbbk......', 'kkkkkkkkkkkkkkkkkkkkkkk..', 'krrrrrrrrrrrrrrrrrrrrrrkk', 'kRRwwRRRRRRRRRRRRRRRRRRyk', 'krrrrrrrrrrrrrrrrrrrrrrrk', '.kkkkkkkkkkkkkkkkkkkkkkk.'],
+  rover: ['........k...........', '........k..kkkkk....', '.......kyk.kcccck...', 'kkkkkkkkkkkkkkkkkkk.', 'kgRRRRRRRRRRRRRRRRgk', 'kggggggggggggggggggk', '.kkdkkkkkkkkkkkkdkk.'],
+  hotrod: ['.......kkkkk.............', '......kwwwwbk.............', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrooyrrrrrk..', 'kRRRRRRRRRRRRooyyRRRRRRyk.', 'krrrrrrrrrrrrrrrrrrrrrrrrk', '.kkkkkkkkkkkkkkkkkkkkkkkk.'],
 };
 const grCarImg = {};
-const grCarArt = C => grCarImg[C.id] ??= PXK.art(GR_BODY[C.id], {k: '#1a1018', w: '#c8e0f0', b: '#6a9ac8', r: C.body[0], R: C.body[1], y: '#ffd84a', d: '#3a3a4a'});
+const grCarArt = C => grCarImg[C.id] ??= PXK.art(GR_BODY[C.id], {k: '#1a1018', w: '#c8e0f0', b: '#6a9ac8', r: C.body[0], R: C.body[1], y: '#ffd84a', d: '#3a3a4a', c: '#c8c8d8', g: '#7a7a8a', G: '#a8a8b8', o: '#ff8a2a'});
 function grDrawWheel(g, x, y, R, rot) {
   x = Math.round(x); y = Math.round(y);
   for (let j = -R; j <= R; j++) for (let i = -R; i <= R; i++) { const d = Math.hypot(i, j); if (d <= R + .3) px(g, d > R - 1.3 ? '#1a1a22' : d > R - 2.3 ? '#4a4a5a' : '#2a2a34', x + i, y + j, 1, 1); }
@@ -429,7 +471,10 @@ function grScenery(g, T, cx, cy, ph) {
   T.sky.forEach((c, i) => px(g, c, 0, HUD + i * 22, W, i === 2 ? H : 22));
   if (T.stars) for (let i = 0; i < 40; i++) px(g, i % 7 ? '#8a8aa8' : '#ffffff', (i * 53 + 7 - Math.floor(cx * .05)) % W + (((i * 53 + 7 - Math.floor(cx * .05)) % W) < 0 ? W : 0), HUD + (i * 37) % 70, 1, 1);
   if (T.stars) { px(g, '#3a6ae8', 190, 24, 14, 14); px(g, '#5ac05a', 194, 27, 6, 5); px(g, '#ffffff', 192, 26, 3, 2); }
-  for (let x = 0; x < W; x++) { const hy = 70 + Math.round(14 * Math.sin((x + cx * .3) / 37) + 8 * Math.sin((x + cx * .3) / 13)); px(g, T.hill, x, hy, 1, H - hy); }
+  if (T.city) for (let x = 0; x < W; x++) { const wx = Math.floor(x + cx * .3), b = Math.floor(wx / 18), hy = 46 + Math.floor(grHash(b) * 40); px(g, T.hill, x, hy, 1, H - hy); if (wx % 18 > 2 && wx % 18 < 16 && wx % 4 === 0) for (let y = hy + 4; y < 120; y += 6) if (grHash(b * 31 + y) > .55) px(g, '#ffd84a', x, y, 2, 2); }
+  else for (let x = 0; x < W; x++) { const hy = 70 + Math.round(14 * Math.sin((x + cx * .3) / 37) + 8 * Math.sin((x + cx * .3) / 13)); px(g, T.hill, x, hy, 1, H - hy); }
+  if (T.sea) { px(g, '#1a6ab8', 0, 96, W, H - 96); for (let x = 0; x < W; x += 6) px(g, '#a8dcf8', (x + Math.floor(gr.tick / 6 + cx * .4)) % W, 96 + ((x * 7) % 9), 3, 1); }
+  if (T.embers) for (let i = 0; i < 24; i++) { const ex = ((i * 67 + Math.floor(cx * .5)) % W + W) % W, ey = H - ((gr.tick * (.4 + (i % 3) * .2) + i * 41) % (H - HUD)); px(g, i % 2 ? '#ff8a2a' : '#ffd84a', ex, ey, 1, 1); }
   for (let x = 0; x < W; x++) {
     const wx = x + cx, gy = Math.round(grGround(wx, ph, T) - cy);
     if (gy >= H) continue;
@@ -438,6 +483,10 @@ function grScenery(g, T, cx, cy, ph) {
     px(g, T.grass, x, gy, 1, 3); if ((wx & 3) === 0) px(g, T.grass2, x, gy + 2, 1, 2);
     if (wx > 0 && wx % (GR.PXM * 100) === 0) { px(g, '#f0f0f8', x, gy - 16, 1, 16); pxFont(g, wx / GR.PXM + ' m', x + 2, gy - 9, '#ffffff', 8); }
   }
+  if (T.deco) { const art = grDecoArt(T); for (let wx = Math.floor(cx / 70) * 70; wx < cx + W + 70; wx += 70) { if (wx < 120 || grHash(wx) < .35) continue;
+    const dx = wx + Math.floor(grHash(wx + 1) * 40), gy = Math.round(grGround(dx, ph, T) - cy); if (gy - art.height > H) continue;
+    if (T.deco === 'lamp') { g.fillStyle = 'rgba(255,224,120,.14)'; g.fillRect(dx - cx - 6, gy - art.height - 4, 18, art.height + 4); }
+    g.drawImage(art, Math.round(dx - cx - art.width / 2), gy - art.height + 2); } }
 }
 // le garage : 5 lignes (terrain, voiture, 3 améliorations) et le bouton PARTIR ; row : la ligne choisie au clavier
 const GR_ROWS = [26, 54, 80, 92, 104, 128];
@@ -455,7 +504,7 @@ function grGarageAct(row, dir) {
 const grOwned = () => grs.owned.terr.includes(grs.terr) && grs.owned.car.includes(grs.car);
 function grDrawGarage(g) {
   const {W, H, HUD} = GR, T = gr.T, C = gr.C, U = gr.U;
-  grScenery(g, T, -40, 30, gr.ph); g.fillStyle = 'rgba(10,6,20,.72)'; g.fillRect(0, HUD, W, H - HUD);
+  grScenery(g, T, -40, 30, gr.ph); g.fillStyle = 'rgba(10,6,20,.55)'; g.fillRect(0, HUD, W, H - HUD);
   px(g, '#0e0a14', 0, 0, W, HUD); pxFont(g, 'GARAGE', 4, 9, '#ffd84a', 8); pxFont(g, grs.coins + ' ●', W - 4, 9, '#ffd84a', 8, 'right');
   const line = (i, label, val, extra, lock) => { const y = GR_ROWS[i], on = gr.row === i, hov = gr.hover === i; if (on || hov) px(g, on ? '#3a3046' : '#2a2236', 4, y - 10, W - 8, 13); pxFont(g, label, 8, y, '#a898b8', 8); if (val != null) { pxFont(g, '◀', 74, y, on ? '#ffd84a' : '#62566e', 8); pxFont(g, val, 120, y, lock ? '#8a7e98' : '#ffffff', 8, 'center'); pxFont(g, '▶', 162, y, on ? '#ffd84a' : '#62566e', 8); } if (extra) pxFont(g, extra, W - 8, y, lock ? '#ffd84a' : '#7ee07a', 8, 'right'); };
   const tLock = !grs.owned.terr.includes(grs.terr), cLock = !grs.owned.car.includes(grs.car);
