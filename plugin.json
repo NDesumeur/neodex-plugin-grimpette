@@ -1,0 +1,22 @@
+{
+  "id": "neodex.grimpette",
+  "name": "Grimpette",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Jeu de conduite : une petite voiture sur des collines sans fin, avec une vraie physique. Au garage, choisis le terrain (prairie, désert, neige, lune) et la voiture (Jeep, Monster, Bolide), et améliore moteur, pneus et réservoir avec tes pièces. En course, accélère, freine, penche-toi en l'air et attention au toit. Un record par terrain.",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "view": "grimpette",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Jeux",
+  "syncMode": "progression",
+  "syncInfo": "Record.",
+  "mobile": false,
+  "system": false,
+  "dependencies": {},
+  "sdk": "2.1.0",
+  "permissions": [
+    "storage"
+  ]
+}
