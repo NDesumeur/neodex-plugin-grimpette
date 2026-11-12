@@ -1,7 +1,7 @@
 {
   "id": "neodex.grimpette",
   "name": "Grimpette",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "NDesumeur",
   "description": "Jeu de conduite : un véhicule sur des collines sans fin, avec une vraie physique. Au garage, choisis parmi 13 mondes (prairie, désert, neige, lune, forêt, plage, jungle, marais, canyon, volcan, Mars, cristaux, ville la nuit) et 12 véhicules (Jeep, Monster, Bolide, Quad, Moto, Buggy, Tracteur, Van, Camion, Rallye, Rover, Hot-rod), et améliore moteur, pneus et réservoir avec tes pièces. En course, accélère, freine, penche-toi en l'air et attention au toit. Un record par monde.",
   "icon": "icon.png",
@@ -10,7 +10,10 @@
   "neobase": ">=4.0.0",
   "type": "app",
   "category": "Jeux",
-  "compatibility": ["windows", "linux"],
+  "compatibility": [
+    "windows",
+    "linux"
+  ],
   "syncMode": "progression",
   "syncInfo": "Record.",
   "mobile": false,

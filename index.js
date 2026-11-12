@@ -323,21 +323,21 @@ const pxFont = (g, text, x, y, color, size = 8, align = 'left') => { const s = P
 const GR = {W: 240, H: 150, HUD: 12, PXM: 10};
 // une nouvelle partie garde le même objet : la boucle du jeu (gameLoop) continue de tourner dessus
 const renew = (old, o) => { if (!old) return o; for (const k of Object.keys(old)) if (k !== 'raf') delete old[k]; return Object.assign(old, o); };
-// les terrains : forme des collines (f : étirement, amp : hauteur max), gravité, adhérence ; les trois premiers se débloquent avec les pièces
+// les terrains : forme des collines (f : étirement, amp : hauteur max), gravité g, roulement roll (sable et boue freinent, bitume et glace roulent), air (1 : pas d'air), adhérence ; les trois premiers se débloquent avec les pièces
 const GR_TERR = [
-  {id: 'prairie', name: 'Prairie', price: 0, f: 1, amp: 38, g: .12, grip: 1, sky: ['#5a8ad8', '#7aa8e8', '#9ac0f0'], hill: '#5a9a6a', grass: '#5ac03a', grass2: '#3a8a2a', dirt: '#8a5a32', dirt2: '#7a4a28', deco: 'tree'},
-  {id: 'desert', name: 'Désert', price: 150, f: 1.8, amp: 52, g: .12, grip: .9, sky: ['#d88a4a', '#e8a85a', '#f0c88a'], hill: '#c88a5a', grass: '#e8c86a', grass2: '#c8a84a', dirt: '#c89a5a', dirt2: '#b88a4a', deco: 'cactus'},
-  {id: 'neige', name: 'Neige', price: 400, f: .8, amp: 46, g: .12, grip: .6, sky: ['#4a5a8a', '#6a7aa8', '#8a9ac8'], hill: '#9aaac8', grass: '#f0f4ff', grass2: '#c8d4f0', dirt: '#6a6a7a', dirt2: '#5a5a6a', deco: 'pine', dp: {g: '#3a6a5a', G: '#f0f4ff', n: '#2a4a44'}},
-  {id: 'lune', name: 'Lune', price: 800, f: .7, amp: 44, g: .05, grip: .8, sky: ['#05030c', '#0a0618', '#120c24'], hill: '#2a2a3a', grass: '#c8c8d0', grass2: '#8a8a9a', dirt: '#6a6a78', dirt2: '#4a4a58', stars: true, deco: 'rock', dp: {R: '#9a9aa8', r: '#6a6a78', d: '#4a4a58'}},
-  {id: 'foret', name: 'Forêt', price: 250, f: 1.1, amp: 42, g: .12, grip: .95, sky: ['#4a7a9a', '#6a9aaa', '#9ac0b8'], hill: '#2a5a3a', grass: '#4a9a32', grass2: '#2a6a22', dirt: '#5a3a22', dirt2: '#4a2e1a', deco: 'pine'},
-  {id: 'plage', name: 'Plage', price: 300, f: 1.4, amp: 30, g: .12, grip: .85, sky: ['#3a9ae8', '#6ab8f0', '#a8dcf8'], hill: '#2a8ac8', grass: '#f8e0a0', grass2: '#e8c878', dirt: '#e0c080', dirt2: '#c8a868', deco: 'palm', sea: true},
-  {id: 'jungle', name: 'Jungle', price: 500, f: .75, amp: 48, g: .12, grip: .9, sky: ['#2a6a4a', '#3a8a5a', '#6aaa6a'], hill: '#1e4a2a', grass: '#3ab82a', grass2: '#1e7a1a', dirt: '#4a3018', dirt2: '#3a2410', deco: 'tree', dp: {g: '#2a8a2a', G: '#5ad03a', n: '#1a5a1a'}},
-  {id: 'marais', name: 'Marais', price: 600, f: .9, amp: 34, g: .12, grip: .7, sky: ['#4a5a4a', '#6a7a5a', '#8a9a6a'], hill: '#3a4a32', grass: '#6a7a3a', grass2: '#4a5a2a', dirt: '#3a3a2a', dirt2: '#2a2a1e', deco: 'reed'},
-  {id: 'canyon', name: 'Canyon', price: 700, f: 2.2, amp: 60, g: .12, grip: .95, sky: ['#e86a3a', '#f08a4a', '#f8b878'], hill: '#a84a2a', grass: '#d8743a', grass2: '#b85a2a', dirt: '#a84a2a', dirt2: '#8a3a20', deco: 'rock', dp: {R: '#d8743a', r: '#a84a2a', d: '#7a3018'}},
-  {id: 'volcan', name: 'Volcan', price: 1000, f: .9, amp: 54, g: .12, grip: .95, sky: ['#1a0a10', '#3a1018', '#6a1a1a'], hill: '#2a1a1e', grass: '#ff6a1a', grass2: '#c83a10', dirt: '#2a2228', dirt2: '#3a2a30', deco: 'rock', dp: {R: '#5a4a50', r: '#3a2e34', d: '#ff6a1a'}, embers: true},
-  {id: 'mars', name: 'Mars', price: 1200, f: .8, amp: 50, g: .07, grip: .85, sky: ['#3a1a1a', '#6a2a1e', '#a8502a'], hill: '#7a3420', grass: '#c86a3a', grass2: '#a8502a', dirt: '#8a3a22', dirt2: '#6a2a18', stars: true, deco: 'rock', dp: {R: '#c86a3a', r: '#8a3a22', d: '#5a2412'}},
-  {id: 'cristaux', name: 'Cristaux', price: 1500, f: .6, amp: 50, g: .1, grip: .75, sky: ['#1a1038', '#2a1a58', '#4a2a7a'], hill: '#2a1a4a', grass: '#b48cff', grass2: '#8a5ad8', dirt: '#3a2a5a', dirt2: '#2a1e44', stars: true, deco: 'crystal'},
-  {id: 'ville', name: 'Ville la nuit', price: 1800, f: 1.5, amp: 36, g: .12, grip: 1, sky: ['#0a0a1e', '#14143a', '#2a1e4a'], hill: '#14142a', grass: '#5a5a6a', grass2: '#ffd84a', dirt: '#2a2a34', dirt2: '#22222a', stars: true, deco: 'lamp', city: true},
+  {id: 'prairie', name: 'Prairie', price: 0, f: 1, amp: 38, g: .12, roll: .995, air: .999, grip: 1, sky: ['#5a8ad8', '#7aa8e8', '#9ac0f0'], hill: '#5a9a6a', grass: '#5ac03a', grass2: '#3a8a2a', dirt: '#8a5a32', dirt2: '#7a4a28', deco: 'tree'},
+  {id: 'desert', name: 'Désert', price: 150, f: 1.8, amp: 52, g: .12, roll: .986, air: .999, grip: .9, sky: ['#d88a4a', '#e8a85a', '#f0c88a'], hill: '#c88a5a', grass: '#e8c86a', grass2: '#c8a84a', dirt: '#c89a5a', dirt2: '#b88a4a', deco: 'cactus'},
+  {id: 'neige', name: 'Neige', price: 400, f: .8, amp: 46, g: .12, roll: .997, air: .999, grip: .6, sky: ['#4a5a8a', '#6a7aa8', '#8a9ac8'], hill: '#9aaac8', grass: '#f0f4ff', grass2: '#c8d4f0', dirt: '#6a6a7a', dirt2: '#5a5a6a', deco: 'pine', dp: {g: '#3a6a5a', G: '#f0f4ff', n: '#2a4a44'}},
+  {id: 'lune', name: 'Lune', price: 800, f: .7, amp: 44, g: .05, roll: .996, air: 1, grip: .8, sky: ['#05030c', '#0a0618', '#120c24'], hill: '#2a2a3a', grass: '#c8c8d0', grass2: '#8a8a9a', dirt: '#6a6a78', dirt2: '#4a4a58', stars: true, deco: 'rock', dp: {R: '#9a9aa8', r: '#6a6a78', d: '#4a4a58'}},
+  {id: 'foret', name: 'Forêt', price: 250, f: 1.1, amp: 42, g: .12, roll: .993, air: .999, grip: .95, sky: ['#4a7a9a', '#6a9aaa', '#9ac0b8'], hill: '#2a5a3a', grass: '#4a9a32', grass2: '#2a6a22', dirt: '#5a3a22', dirt2: '#4a2e1a', deco: 'pine'},
+  {id: 'plage', name: 'Plage', price: 300, f: 1.4, amp: 30, g: .12, roll: .98, air: .999, grip: .85, sky: ['#3a9ae8', '#6ab8f0', '#a8dcf8'], hill: '#2a8ac8', grass: '#f8e0a0', grass2: '#e8c878', dirt: '#e0c080', dirt2: '#c8a868', deco: 'palm', sea: true},
+  {id: 'jungle', name: 'Jungle', price: 500, f: .75, amp: 48, g: .12, roll: .988, air: .998, grip: .9, sky: ['#2a6a4a', '#3a8a5a', '#6aaa6a'], hill: '#1e4a2a', grass: '#3ab82a', grass2: '#1e7a1a', dirt: '#4a3018', dirt2: '#3a2410', deco: 'tree', dp: {g: '#2a8a2a', G: '#5ad03a', n: '#1a5a1a'}},
+  {id: 'marais', name: 'Marais', price: 600, f: .9, amp: 34, g: .12, roll: .976, air: .998, grip: .7, sky: ['#4a5a4a', '#6a7a5a', '#8a9a6a'], hill: '#3a4a32', grass: '#6a7a3a', grass2: '#4a5a2a', dirt: '#3a3a2a', dirt2: '#2a2a1e', deco: 'reed'},
+  {id: 'canyon', name: 'Canyon', price: 700, f: 2.2, amp: 60, g: .13, roll: .995, air: .999, grip: .95, sky: ['#e86a3a', '#f08a4a', '#f8b878'], hill: '#a84a2a', grass: '#d8743a', grass2: '#b85a2a', dirt: '#a84a2a', dirt2: '#8a3a20', deco: 'rock', dp: {R: '#d8743a', r: '#a84a2a', d: '#7a3018'}},
+  {id: 'volcan', name: 'Volcan', price: 1000, f: .9, amp: 54, g: .135, roll: .994, air: .998, grip: .95, sky: ['#1a0a10', '#3a1018', '#6a1a1a'], hill: '#2a1a1e', grass: '#ff6a1a', grass2: '#c83a10', dirt: '#2a2228', dirt2: '#3a2a30', deco: 'rock', dp: {R: '#5a4a50', r: '#3a2e34', d: '#ff6a1a'}, embers: true},
+  {id: 'mars', name: 'Mars', price: 1200, f: .8, amp: 50, g: .07, roll: .995, air: 1, grip: .85, sky: ['#3a1a1a', '#6a2a1e', '#a8502a'], hill: '#7a3420', grass: '#c86a3a', grass2: '#a8502a', dirt: '#8a3a22', dirt2: '#6a2a18', stars: true, deco: 'rock', dp: {R: '#c86a3a', r: '#8a3a22', d: '#5a2412'}},
+  {id: 'cristaux', name: 'Cristaux', price: 1500, f: .6, amp: 50, g: .1, roll: .997, air: 1, grip: .75, sky: ['#1a1038', '#2a1a58', '#4a2a7a'], hill: '#2a1a4a', grass: '#b48cff', grass2: '#8a5ad8', dirt: '#3a2a5a', dirt2: '#2a1e44', stars: true, deco: 'crystal'},
+  {id: 'ville', name: 'Ville la nuit', price: 1800, f: 1.5, amp: 36, g: .12, roll: .998, air: .999, grip: 1.1, sky: ['#0a0a1e', '#14143a', '#2a1e4a'], hill: '#14142a', grass: '#5a5a6a', grass2: '#ffd84a', dirt: '#2a2a34', dirt2: '#22222a', stars: true, deco: 'lamp', city: true},
 ];
 // le décor posé sur le sol de chaque monde, dessiné à la main (k : contour ; les autres lettres viennent de dp, ou des couleurs par défaut)
 const GR_DECO = {
@@ -354,20 +354,21 @@ const GR_DPAL = {k: '#1a1018', g: '#3a8a2a', G: '#6ac04a', n: '#2a6a22', b: '#6a
 const grDecoImg = {};
 const grDecoArt = T => grDecoImg[T.id] ??= PXK.art(GR_DECO[T.deco], {...GR_DPAL, ...(T.deco === 'reed' ? {g: '#5a7a3a', b: '#6a4a2a'} : {}), ...(T.dp || {})});
 const grHash = n => { const x = Math.sin(n * 91.7 + 13.1) * 43758.5453; return x - Math.floor(x); };
-// les voitures : empattement L, rayon des roues R, vitesse, reprise, consommation, couleurs
+// les voitures : empattement L, rayon des roues R, vitesse, reprise, consommation, poids m (lourd : tombe plus vite, rebondit moins, tourne moins en l'air),
+// part du poids sur l'arrière bal, cabrage à l'accélération lift, rwd : seule la roue arrière pousse ; couleurs
 const GR_CARS = [
-  {id: 'jeep', name: 'Jeep', price: 0, L: 22, R: 5, speed: 2.6, acc: .05, burn: 1, body: ['#d83a3a', '#ff6a5a'], desc: 'équilibrée'},
-  {id: 'monster', name: 'Monster', price: 250, L: 24, R: 7, speed: 2.3, acc: .066, burn: 1.15, body: ['#3a8a3a', '#6ac05a'], desc: 'grosses roues, grimpe tout'},
-  {id: 'bolide', name: 'Bolide', price: 600, L: 24, R: 4, speed: 3.5, acc: .056, burn: 1.35, body: ['#3a5ad8', '#6a8aff'], desc: 'très rapide, boit beaucoup'},
-  {id: 'quad', name: 'Quad', price: 150, L: 18, R: 5, speed: 2.4, acc: .058, burn: .8, body: ['#e8a01a', '#ffd04a'], desc: 'petit, agile et sobre'},
-  {id: 'moto', name: 'Moto', price: 350, L: 18, R: 6, speed: 3, acc: .06, burn: .75, body: ['#d83a8a', '#ff7ac0'], desc: 'légère, se cabre vite'},
-  {id: 'buggy', name: 'Buggy', price: 450, L: 22, R: 6, speed: 2.9, acc: .062, burn: 1.05, body: ['#e86a1a', '#ffa04a'], desc: 'arceau et grosses suspensions'},
-  {id: 'tracteur', name: 'Tracteur', price: 500, L: 20, R: 7, speed: 1.8, acc: .08, burn: .9, body: ['#2a8a3a', '#5ac05a'], desc: 'lent mais grimpe tout'},
-  {id: 'van', name: 'Van', price: 550, L: 26, R: 5, speed: 2.5, acc: .05, burn: 1.1, body: ['#e8e4ec', '#ffffff'], desc: 'long et stable'},
-  {id: 'camion', name: 'Camion', price: 700, L: 30, R: 6, speed: 2.1, acc: .055, burn: 1.5, body: ['#c83a2a', '#e86a4a'], desc: 'très long, ne se retourne pas'},
-  {id: 'rallye', name: 'Rallye', price: 900, L: 24, R: 5, speed: 3.3, acc: .07, burn: 1.25, body: ['#3ab8d8', '#7ae0f8'], desc: 'vive, rapide, avec un aileron'},
-  {id: 'rover', name: 'Rover', price: 1200, L: 26, R: 6, speed: 2.2, acc: .06, burn: .55, body: ['#a8a8b8', '#d8d8e8'], desc: 'presque sans essence'},
-  {id: 'hotrod', name: 'Hot-rod', price: 1500, L: 24, R: 5, speed: 3.8, acc: .062, burn: 1.5, body: ['#1a1a28', '#3a3a50'], desc: 'la plus rapide de toutes'},
+  {id: 'jeep', name: 'Jeep', price: 0, L: 22, R: 5, speed: 2.6, acc: .05, burn: 1, m: 1, bal: .5, lift: .0012, body: ['#d83a3a', '#ff6a5a'], desc: 'équilibrée'},
+  {id: 'monster', name: 'Monster', price: 250, L: 24, R: 7, speed: 2.3, acc: .066, burn: 1.15, m: 1.3, bal: .5, lift: .0016, body: ['#3a8a3a', '#6ac05a'], desc: 'grosses roues, grimpe tout'},
+  {id: 'bolide', name: 'Bolide', price: 600, L: 24, R: 4, speed: 3.5, acc: .056, burn: 1.35, m: .9, bal: .56, lift: .0012, rwd: 1, body: ['#3a5ad8', '#6a8aff'], desc: 'très rapide, boit beaucoup'},
+  {id: 'quad', name: 'Quad', price: 150, L: 18, R: 5, speed: 2.4, acc: .058, burn: .8, m: .7, bal: .5, lift: .0016, body: ['#e8a01a', '#ffd04a'], desc: 'petit, agile et sobre'},
+  {id: 'moto', name: 'Moto', price: 350, L: 18, R: 6, spoke: 1, rider: 1, speed: 3, acc: .06, burn: .75, m: .5, bal: .62, lift: .0034, rwd: 1, body: ['#d83a8a', '#ff7ac0'], desc: 'légère, se cabre au démarrage'},
+  {id: 'buggy', name: 'Buggy', price: 450, L: 22, R: 6, speed: 2.9, acc: .062, burn: 1.05, m: .85, bal: .56, lift: .0016, rwd: 1, body: ['#e86a1a', '#ffa04a'], desc: 'arceau et grosses suspensions'},
+  {id: 'tracteur', name: 'Tracteur', price: 500, L: 20, R: 7, speed: 1.8, acc: .08, burn: .9, m: 1.6, bal: .66, lift: .002, rwd: 1, body: ['#2a8a3a', '#5ac05a'], desc: 'lent mais grimpe tout'},
+  {id: 'van', name: 'Van', price: 550, L: 26, R: 5, speed: 2.5, acc: .05, burn: 1.1, m: 1.3, bal: .48, lift: .0006, body: ['#e8e4ec', '#ffffff'], desc: 'long et stable'},
+  {id: 'camion', name: 'Camion', price: 700, L: 30, R: 6, speed: 2.1, acc: .055, burn: 1.5, m: 2, bal: .42, lift: .0004, body: ['#c83a2a', '#e86a4a'], desc: 'très long, ne se retourne pas'},
+  {id: 'rallye', name: 'Rallye', price: 900, L: 24, R: 5, speed: 3.3, acc: .07, burn: 1.25, m: .95, bal: .5, lift: .0012, body: ['#3ab8d8', '#7ae0f8'], desc: 'vive, rapide, avec un aileron'},
+  {id: 'rover', name: 'Rover', price: 1200, L: 26, R: 6, speed: 2.2, acc: .06, burn: .55, m: 1.1, bal: .5, lift: .0008, body: ['#a8a8b8', '#d8d8e8'], desc: 'presque sans essence'},
+  {id: 'hotrod', name: 'Hot-rod', price: 1500, L: 24, R: 5, speed: 3.8, acc: .062, burn: 1.5, m: 1.1, bal: .62, lift: .0028, rwd: 1, body: ['#1a1a28', '#3a3a50'], desc: 'la plus rapide de toutes'},
 ];
 const GR_UP = [['moteur', 'Moteur'], ['pneus', 'Pneus'], ['reservoir', 'Réservoir']];
 const GR_COST = [20, 50, 110, 220, 400];
@@ -393,22 +394,24 @@ function grWheel(w, drive) {
   if (depth <= 0) return false;
   w.x += nx * depth; w.y += ny * depth;
   let vx = w.x - w.px, vy = w.y - w.py; const tx = 1 / len, ty = s / len, vt = vx * tx + vy * ty, vn = vx * nx + vy * ny;
-  let nvt = vt * .995;
-  if (drive) { const target = drive > 0 ? C.speed + U.moteur * .35 : -1.6, acc = (C.acc + U.pneus * .012) * T.grip * (drive > 0 ? 1 : 1.4); nvt = vt + Math.max(-acc, Math.min(acc, target - vt)); }
-  const nvn = vn < 0 ? -vn * .15 : vn;  // un petit rebond, pas plus
+  let nvt = vt * T.roll;
+  if (drive && (!C.rwd || w === gr.a)) { const target = drive > 0 ? C.speed + U.moteur * .35 : -1.6, acc = (C.acc + U.pneus * .012) * T.grip * (drive > 0 ? 1 : 1.4) * (C.rwd ? 1.5 : 1) / C.m ** .25; nvt = vt + Math.max(-acc, Math.min(acc, target - vt)); }
+  const nvn = vn < 0 ? -vn * Math.min(.3, .15 / C.m) : vn;  // un petit rebond : moins il est lourd, plus il rebondit
   vx = tx * nvt + nx * nvn; vy = ty * nvt + ny * nvn; w.px = w.x - vx; w.py = w.y - vy;
   return true;
 }
 function grStep(drive) {
   const {a, b, C, T} = gr;
-  for (const w of [a, b]) { const vx = (w.x - w.px) * .999, vy = (w.y - w.py) * .999; w.px = w.x; w.py = w.y; w.x += vx; w.y += vy + T.g; }
-  // l'empattement reste fixe (deux passes suffisent)
-  for (let i = 0; i < 2; i++) { const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, k = (d - C.L) / d / 2; a.x += dx * k; a.y += dy * k; b.x -= dx * k; b.y -= dy * k; }
+  const g = T.g * (.8 + .2 * C.m);  // le poids : un véhicule lourd retombe plus vite
+  for (const w of [a, b]) { const vx = (w.x - w.px) * T.air, vy = (w.y - w.py) * T.air; w.px = w.x; w.py = w.y; w.x += vx; w.y += vy + g; }
+  // l'empattement reste fixe (deux passes) ; le côté le plus lourd bouge le moins
+  for (let i = 0; i < 2; i++) { const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, k = (d - C.L) / d; a.x += dx * k * (1 - C.bal); a.y += dy * k * (1 - C.bal); b.x -= dx * k * C.bal; b.y -= dy * k * C.bal; }
   const ga = grWheel(a, drive), gb = grWheel(b, drive);
   for (const w of [a, b]) w.rot += (w.x - w.px) / C.R;
-  // en l'air : accélérer lève le nez, freiner le baisse
+  // au sol, le moteur cabre le véhicule autour de sa roue arrière (la moto se lève, le camion à peine) ; en l'air, accélérer lève le nez, freiner le baisse
   const ground = ga || gb;
-  if (!ground && drive) { const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2, ang = -drive * .006; for (const w of [a, b]) { const dx = w.x - cx, dy = w.y - cy; w.x = cx + dx * Math.cos(ang) - dy * Math.sin(ang); w.y = cy + dx * Math.sin(ang) + dy * Math.cos(ang); } }
+  if (ground && drive > 0 && ga) { const ang = -C.lift * T.g / .12, dx = b.x - a.x, dy = b.y - a.y; b.x = a.x + dx * Math.cos(ang) - dy * Math.sin(ang); b.y = a.y + dx * Math.sin(ang) + dy * Math.cos(ang); }
+  if (!ground && drive) { const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2, ang = -drive * .006 / Math.sqrt(C.m); for (const w of [a, b]) { const dx = w.x - cx, dy = w.y - cy; w.x = cx + dx * Math.cos(ang) - dy * Math.sin(ang); w.y = cy + dx * Math.sin(ang) + dy * Math.cos(ang); } }
   return ground;
 }
 // le toit : au-dessus du milieu des roues, perpendiculaire à l'axe de la voiture
@@ -442,7 +445,7 @@ const GR_BODY = {
   monster: ['.....kkkkkkk..............', '....kwwwwwwwk.............', '...kwbbbkbbbwk............', '..kwbbbbkbbbbwk...........', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrrrrrrrrrk..', 'krRRRRRRRRRRRRRRRRRRRyyk..', 'krrrrrrrrrrrrrrrrrrrrrrk..', 'kkkkkkkkkkkkkkkkkkkkkkkk..', '..kdk.............kdk.....', '..kdk.............kdk.....'],
   bolide: ['........kkkkkk............', '......kkwwwwbbk...........', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrrrrrrrrrkk.', 'kRRRRRRRRRRRRRRRRRRRRRRyyk', 'krrrrrrrrrrrrrrrrrrrrrrrrk', '.kkkkkkkkkkkkkkkkkkkkkkkk.'],
   quad: ['..............kk....', '.............kck....', 'kkkkkkkkkkkkkkkkkkk.', 'krRRRRRRRRRRRRRRRRyk', 'krrrrrrrrrrrrrrrrrrk', '.kkddkkkkkkkkkddkk..'],
-  moto: ['.............kk.....', '............kck.....', 'kkkkk......kkk......', 'krrrrkkkkkkrrrk.....', '.kRRRRRRRRRRRRRyk...', '..kkdddkkkkddkkk....'],
+  moto: ['...........khhhhk...........', '..........khhhhwwk..........', '..........khhhhbbsck........', '........kkbRRbbkkkyyk.......', '...kkkkkbbbbbbRRrkyyk.......', '.kkdddddddbbrrrrrkkckkkk....', 'krrrrrrRRRRrbbrrrkkrrrrrk...', 'rkkcccccccRkkbkkk..kckkkrk..', 'k........kckbkk.....c...k...', '........kggkkkgk.....c......', '......kkkgGGGGgk.....c......', '....kkdddggggggk.....c......', '...kdddddkkkkkk.......c.....', '...kddkkk.............c.....'],  // enduro et pilote penché (roues en colonnes 4 et 22)
   buggy: ['....kkkkkkkkkk..........', '....kc.......ck.........', '...kc.........ck........', 'kkkkkkkkkkkkkkkkkkkkkkk.', 'krRRRRRRRRRRRRRRRRRRRryk', '.krrrrrrrrrrrrrrrrrrrrk.', '..kkdkkkkkkkkkkkkkdkk...'],
   tracteur: ['......kkkkkk........', '......kwwwwk...kk...', '......kwbbwk...kk...', 'kkkkkkkkkkkkkkkkkk..', 'krRRRRRRRRRRRRRRRyk.', 'krrrrrrrrrrrrrrrrrk.', '.kkkkkkkkkkkkkkkkk..'],
   van: ['..kkkkkkkkkkkkkkkkkkkk.....', '.kwwwwkwwwwkwwwwkwwwwbk....', 'kwwwwwkwwwwkwwwwkwwwbbk....', 'krrrrrrrrrrrrrrrrrrrrrrkk..', 'kRRRRRRRRRRRRRRRRRRRRRRRyk.', 'krrrrrrrrrrrrrrrrrrrrrrrrk.', '.kkdkkkkkkkkkkkkkkkkkkdkk..'],
@@ -452,9 +455,14 @@ const GR_BODY = {
   hotrod: ['.......kkkkk.............', '......kwwwwbk.............', 'kkkkkkkkkkkkkkkkkkkkkkk...', 'krrrrrrrrrrrrrrooyrrrrrk..', 'kRRRRRRRRRRRRooyyRRRRRRyk.', 'krrrrrrrrrrrrrrrrrrrrrrrrk', '.kkkkkkkkkkkkkkkkkkkkkkkk.'],
 };
 const grCarImg = {};
-const grCarArt = C => grCarImg[C.id] ??= PXK.art(GR_BODY[C.id], {k: '#1a1018', w: '#c8e0f0', b: '#6a9ac8', r: C.body[0], R: C.body[1], y: '#ffd84a', d: '#3a3a4a', c: '#c8c8d8', g: '#7a7a8a', G: '#a8a8b8', o: '#ff8a2a'});
-function grDrawWheel(g, x, y, R, rot) {
+const grCarArt = C => grCarImg[C.id] ??= PXK.art(GR_BODY[C.id], {k: '#1a1018', w: '#c8e0f0', b: C.rider ? '#2a3a6a' : '#6a9ac8', h: '#f0f0f8', s: '#e8b08a', r: C.body[0], R: C.body[1], y: '#ffd84a', d: '#3a3a4a', c: '#c8c8d8', g: '#7a7a8a', G: '#a8a8b8', o: '#ff8a2a'});
+function grDrawWheel(g, x, y, R, rot, spoke) {
   x = Math.round(x); y = Math.round(y);
+  if (spoke) {  // pneu fin de moto, jante et rayons qui tournent
+    for (let j = -R; j <= R; j++) for (let i = -R; i <= R; i++) { const d = Math.hypot(i, j); if (d <= R + .3 && d > R - 1.6) px(g, d > R - .6 ? '#1a1a22' : '#3a3a48', x + i, y + j, 1, 1); else if (d <= R - 1.6 && d > R - 2.4) px(g, '#a8a8b8', x + i, y + j, 1, 1); }
+    for (let k = 0; k < 4; k++) { const an = rot + k * Math.PI / 4; for (let r = -(R - 2); r <= R - 2; r++) px(g, '#8a8a9a', x + Math.round(Math.cos(an) * r), y + Math.round(Math.sin(an) * r), 1, 1); }
+    px(g, '#e8e8f0', x, y, 1, 1); return;
+  }
   for (let j = -R; j <= R; j++) for (let i = -R; i <= R; i++) { const d = Math.hypot(i, j); if (d <= R + .3) px(g, d > R - 1.3 ? '#1a1a22' : d > R - 2.3 ? '#4a4a5a' : '#2a2a34', x + i, y + j, 1, 1); }
   const s = R - 2.5; px(g, '#c8c8d8', x + Math.round(Math.cos(rot) * s), y + Math.round(Math.sin(rot) * s), 1, 1); px(g, '#c8c8d8', x - Math.round(Math.cos(rot) * s), y - Math.round(Math.sin(rot) * s), 1, 1); px(g, '#e8e8f0', x, y, 1, 1);
 }
@@ -462,9 +470,9 @@ function grDrawWheel(g, x, y, R, rot) {
 function grDrawCar(g, C, a, b, ox, oy) {
   const mx = (a.x + b.x) / 2 - ox, my = (a.y + b.y) / 2 - oy, ang = Math.atan2(b.y - a.y, b.x - a.x), art = grCarArt(C);
   g.save(); g.translate(Math.round(mx), Math.round(my)); g.rotate(ang); g.drawImage(art, -Math.round(art.width / 2) + 1, -art.height - C.R + 7);
-  sprite(g, ['.kkk.', 'khhhk', 'kssek', 'kssk.', '.kk..'], -6, -art.height - C.R + 6, {k: '#1a1018', h: '#5a3a1a', s: '#e8b08a', e: '#1a1018'});
+  if (!C.rider) sprite(g, ['.kkk.', 'khhhk', 'kssek', 'kssk.', '.kk..'], -6, -art.height - C.R + 6, {k: '#1a1018', h: '#5a3a1a', s: '#e8b08a', e: '#1a1018'});
   g.restore();
-  grDrawWheel(g, a.x - ox, a.y - oy, C.R, a.rot); grDrawWheel(g, b.x - ox, b.y - oy, C.R, b.rot);
+  grDrawWheel(g, a.x - ox, a.y - oy, C.R, a.rot, C.spoke); grDrawWheel(g, b.x - ox, b.y - oy, C.R, b.rot, C.spoke);
 }
 function grScenery(g, T, cx, cy, ph) {
   const {W, H, HUD} = GR;

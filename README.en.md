@@ -8,8 +8,8 @@ A pixel art driving game: a little car on endless hills, with real physics. Go a
 
 Before each game, you stop at the garage:
 
-- **13 worlds**: Meadow (from the start), Desert, Snow (slippery), Moon (you float), Forest, Beach, Jungle, Swamp (muddy), Canyon (steep slopes), Volcano, Mars (low gravity), Crystals and City at night, each with its own sky and scenery.
-- **12 vehicles**: Jeep (well balanced, from the start), Monster, Racer, Quad, Motorbike, Buggy, Tractor, Van, Truck, Rally, Rover (barely uses fuel) and Hot rod (the fastest).
+- **13 worlds**: Meadow (from the start), Desert, Snow (slippery), Moon (you float), Forest, Beach, Jungle, Swamp (muddy), Canyon (steep slopes), Volcano, Mars (low gravity), Crystals and City at night, each with its own sky, scenery and physics: gravity, sand and mud that slow you down, ice and tarmac that let you roll.
+- **12 vehicles**: Jeep (well balanced, from the start), Monster, Racer, Quad, Motorbike, Buggy, Tractor, Van, Truck, Rally, Rover (barely uses fuel) and Hot rod (the fastest). Each one has its own weight: heavy ones fall fast and turn little in the air, light ones bounce; the Motorbike and the Hot rod pop a wheelie when you accelerate, and rear-wheel drives only push with the back wheel.
 - **Upgrades**, for each car: **engine**, **tyres** (grip) and **tank**, over 5 levels.
 
 Terrains, cars and upgrades are bought with the **coins** picked up on the road.

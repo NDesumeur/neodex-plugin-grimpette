@@ -13,6 +13,7 @@ module.exports = async ({ pj, sleep }) => {
   if (process.env.NEO_SHOTS) {  // chaque monde puis chaque véhicule, au garage
     await key('ArrowLeft'); await key('ArrowUp'); for (let i = 1; i <= 13; i++) { await key('ArrowRight'); await sleep(120); await shot('m' + i); }
     await key('ArrowDown'); for (let i = 1; i <= 12; i++) { await key('ArrowRight'); await sleep(120); await shot('v' + i); }
+    await sleep(400);  // l'étiquette se met à jour toutes les 20 images
     if (!/terrain Prairie, voiture Jeep/.test(await label())) throw new Error('13 mondes et 12 véhicules attendus : « ' + (await label()) + ' »');
     await key('ArrowRight');  // revient sur le Monster, comme sans images
   }
