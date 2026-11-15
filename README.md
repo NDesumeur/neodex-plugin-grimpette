@@ -20,6 +20,15 @@ Terrains, voitures et améliorations s'achètent avec les **pièces** ramassées
 - Course : **→** accélérer, **←** freiner. En l'air, **→** lève le nez et **←** le baisse.
 - **P** ou **Échap** : pause. Après une partie, **Espace** ramène au garage.
 
+## Voler
+
+- **Tremplins** : après 90 m, des rampes en bois montent de plus en plus raides puis retombent d'un coup ; lancé, le véhicule décolle loin. Les bosses courtes des collines font aussi sauter dans les descentes rapides.
+- En l'air, le véhicule **plane** un peu ; → lève le nez, ← le baisse.
+- **Le vol rapporte** : une pièce par demi-seconde en l'air, 10 par **salto**, et 2 pour un **atterrissage parfait** (les deux roues posées ensemble, dans le sens de la pente), qui donne aussi un petit élan.
+- **Nitro** (**Espace** ou **Maj**) : une poussée qui fait filer, même en l'air. Sa jauge bleue se remplit en volant, en faisant des saltos et en atterrissant à plat.
+- **Le moteur** a son propre son pour chaque véhicule (grave pour le Tracteur et le Camion, aigu pour la Moto, doux pour le Rover) et monte avec la vitesse, l'accélération et le nitro.
+- **Plein écran** : le bouton du même nom ; Échap pour en sortir. Sur un écran large, la scène s'élargit pour voir plus loin.
+
 ## Comment ça marche
 
 - Si le **toit** touche le sol, la partie est finie.

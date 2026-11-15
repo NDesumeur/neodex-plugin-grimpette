@@ -20,6 +20,15 @@ Terrains, cars and upgrades are bought with the **coins** picked up on the road.
 - Road: **→** speed up, **←** brake. In the air, **→** lifts the nose and **←** lowers it.
 - **P** or **Esc**: pause. After a game, **Space** goes back to the garage.
 
+## Flying
+
+- **Ramps**: after 90 m, wooden ramps rise steeper and steeper then drop away; at speed, the vehicle takes off far. Short bumps in the hills also make you jump on fast descents.
+- In the air the vehicle **glides** a little; → lifts the nose, ← lowers it.
+- **Flying pays**: a coin per half second in the air, 10 per **flip**, and 2 for a **perfect landing** (both wheels down together, along the slope), which also gives a small boost.
+- **Nitro** (**Space** or **Shift**): a push that makes you fly along, even in the air. Its blue gauge fills as you fly, flip and land flat.
+- **The engine** has its own sound for each vehicle and rises with speed, throttle and nitro.
+- **Full screen**: the button of the same name; Escape to leave it. On a wide screen, the scene widens to see further.
+
 ## How it works
 
 - If the **roof** touches the ground, the game is over.

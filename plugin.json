@@ -1,9 +1,9 @@
 {
   "id": "neodex.grimpette",
   "name": "Grimpette",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "NDesumeur",
-  "description": "Jeu de conduite : un véhicule sur des collines sans fin, avec une vraie physique. Au garage, choisis parmi 13 mondes (prairie, désert, neige, lune, forêt, plage, jungle, marais, canyon, volcan, Mars, cristaux, ville la nuit) et 12 véhicules (Jeep, Monster, Bolide, Quad, Moto, Buggy, Tracteur, Van, Camion, Rallye, Rover, Hot-rod), et améliore moteur, pneus et réservoir avec tes pièces. En course, accélère, freine, penche-toi en l'air et attention au toit. Un record par monde.",
+  "description": "Jeu de conduite : un véhicule sur des collines sans fin, avec une vraie physique. Au garage, choisis parmi 13 mondes (prairie, désert, neige, lune, forêt, plage, jungle, marais, canyon, volcan, Mars, cristaux, ville la nuit) et 12 véhicules (Jeep, Monster, Bolide, Quad, Moto, Buggy, Tracteur, Van, Camion, Rallye, Rover, Hot-rod), et améliore moteur, pneus et réservoir avec tes pièces. En course, accélère, freine, lance le nitro, décolle des tremplins et des bosses, fais des saltos et atterris à plat : le vol remplit le nitro et rapporte des pièces. Chaque véhicule a le son de son moteur. Attention au toit. Un record par monde. Scène plus large sur grand écran, plein écran.",
   "icon": "icon.png",
   "entry": "index.js",
   "view": "grimpette",
