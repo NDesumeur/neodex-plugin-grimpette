@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.grimpette",
   "repo": "NDesumeur/neodex-plugin-grimpette",
-  "version": "1.2.0",
-  "sha256": "aaeff2ac6c79d5e1356a5ae1a40e6a207e9b91f99c850f9c3a2365cf0f5015a5",
-  "approvedAt": "2026-11-16T04:14:36.521Z",
+  "version": "1.2.1",
+  "sha256": "df7ff440fca50e2b0ec41d6662d9ae39ea1317633c20034a9628d4d4bfe5135e",
+  "approvedAt": "2026-11-16T16:38:49.052Z",
   "neobase": ">=4.0.0",
-  "signature": "iAS3zKG6nivGS8Z00mbqVB3LGQT/h+0aPLh1gynDpWwcnY1s0pEZmi844COg4HSnSMhUWd9XtasSFdqKpf1HBg=="
+  "signature": "nrGpOC7wWU1WWf8LGthBtQcp3Cib1mxjizQV01/VmnZfLF4FZ6VB9D0GSjV8paYVpNVeMVIvi3a2YEISfIhcAQ=="
 }
