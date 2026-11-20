@@ -98,7 +98,6 @@
  "RECORDS": "BESTS",
  "Rallye": "Rally",
  "Record": "Best",
- "Record.": "Best.",
  "Rover": "Rover",
  "Réservoir": "Tank",
  "SALTO ! +": "FLIP! +",
@@ -152,5 +151,6 @@
  "VOL": "FLIGHT",
  "Shift": "Shift",
  "pas de tremplin": "no springboard",
- "images en l’air": "images in the air"
+ "images en l’air": "images in the air",
+ "Rien n'est synchronisé : tes records restent sur cet appareil.": "Nothing is synced: your records stay on this device."
 }
