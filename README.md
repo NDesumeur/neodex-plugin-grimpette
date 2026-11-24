@@ -24,10 +24,18 @@ Terrains, voitures et améliorations s'achètent avec les **pièces** ramassées
 
 - **Tremplins** : après 90 m, des rampes en bois montent de plus en plus raides puis retombent d'un coup ; lancé, le véhicule décolle loin. Les bosses courtes des collines font aussi sauter dans les descentes rapides.
 - En l'air, le véhicule **plane** un peu ; → lève le nez, ← le baisse.
-- **Le vol rapporte** : une pièce par demi-seconde en l'air, 10 par **salto**, et 2 pour un **atterrissage parfait** (les deux roues posées ensemble, dans le sens de la pente), qui donne aussi un petit élan.
+- **Le vol rapporte** : une pièce par demi-seconde en l'air, 10 à 15 par **salto** (voir Figures et combos), et 2 pour un **atterrissage parfait** (les deux roues posées ensemble, dans le sens de la pente), qui donne aussi un petit élan.
 - **Nitro** (**Espace** ou **Maj**) : une poussée qui fait filer, même en l'air. Sa jauge bleue se remplit en volant, en faisant des saltos et en atterrissant à plat.
 - **Le moteur** a son propre son pour chaque véhicule (grave pour le Tracteur et le Camion, aigu pour la Moto, doux pour le Rover) et monte avec la vitesse, l'accélération et le nitro.
 - **Plein écran** : le bouton du même nom ; Échap pour en sortir. Sur un écran large, la scène s'élargit pour voir plus loin.
+
+## Figures et combos (nouveau en 1.3.0)
+
+- **Salto arrière** (le nez se lève et fait le tour, → en l'air) : 10 pièces par tour. **Salto avant** (le nez plonge, ← en l'air), plus difficile : 15 pièces par tour. Deux ou trois tours d'affilée donnent un **DOUBLE** ou un **TRIPLE** salto.
+- **Vol** : une pièce par demi-seconde en l'air, comptée avec les saltos du même saut.
+- **Cabré** : rouler plus d'une seconde sur la seule roue arrière (accélérer fait lever le nez) rapporte 2 pièces par seconde ; le temps s'affiche au-dessus du véhicule.
+- **Combo** : une figure faite moins de 4 secondes (au sol) après la précédente fait monter le combo, jusqu'à **×5** ; toutes les pièces de la figure sont multipliées, et l'atterrissage parfait aussi. Le combo et sa jauge violette s'affichent sous la barre du haut ; un atterrissage parfait relance la jauge.
+- Les messages de figures s'empilent au-dessus du véhicule, sans se chevaucher. La fin de partie donne le combo max et le plus long cabré ; la colonne garde le total de saltos et le meilleur combo.
 
 ## Comment ça marche
 

@@ -395,7 +395,7 @@ const grSlope = (x, ph, T) => (grGround(x + .5, ph, T) - grGround(x - .5, ph, T)
 function grNew(mode = 'garage') {
   const g = gr?.g, r = seeded(Date.now() % 1e9), ph = [r() * 6, r() * 6, r() * 6, r() * 6], T = GR_TERR[grs.terr], C = GR_CARS[grs.car], U = grUp(grs.car);
   const y0 = grGround(40, ph, T) - C.R;
-  gr = renew(gr, {g, mode, tick: 0, seen: 0, ph, T, C, U, a: {x: 40, y: y0, px: 40, py: y0, rot: 0}, b: {x: 40 + C.L, y: y0, px: 40 + C.L, py: y0, rot: 0}, fuel: 100, coins: 0, best: 0, cam: {x: 0, y: 40}, keys: new Set(), cans: [{x: 900, got: 0}], coinRows: [], nextCoin: 260, dead: 0, why: '', still: 0, record: false, pops: [], air: 0, flips: 0, spin: 0, row: 5, hover: null, nitro: 50, boost: 0, touch: [0, 0], landings: 0, airBest: 0, flame: []});
+  gr = renew(gr, {g, mode, tick: 0, seen: 0, ph, T, C, U, a: {x: 40, y: y0, px: 40, py: y0, rot: 0}, b: {x: 40 + C.L, y: y0, px: 40 + C.L, py: y0, rot: 0}, fuel: 100, coins: 0, best: 0, cam: {x: 0, y: 40}, keys: new Set(), cans: [{x: 900, got: 0}], coinRows: [], nextCoin: 260, dead: 0, why: '', still: 0, record: false, pops: [], air: 0, flips: 0, spin: 0, row: 5, hover: null, nitro: 50, boost: 0, touch: [0, 0], landings: 0, airBest: 0, flame: [], combo: 0, comboT: 0, comboMax: 0, wheelie: 0, wheelieBest: 0, fwd: 0});
   gr.onStop = grEngineOff;
   grInfo();
 }
@@ -442,7 +442,22 @@ function grEngine(speed, drive) {
 function grEngineOff() { if (grEng) try { grEng.g.gain.setTargetAtTime(0, grac.currentTime, .05); grEng.fq = 0; } catch {} }
 // le toit : au-dessus du milieu des roues, perpendiculaire à l'axe de la voiture
 const grHead = () => { const {a, b, C} = gr, dx = (b.x - a.x) / C.L, dy = (b.y - a.y) / C.L, h = 8 + C.R; return {x: (a.x + b.x) / 2 + dy * h, y: (a.y + b.y) / 2 - dx * h, ang: Math.atan2(dy, dx)}; };
-function grEnd(why) { grEngineOff(); gr.mode = 'over'; gr.dead = 0; gr.why = why; grs.games++; grs.coins += gr.coins; grs.total += gr.coins; best('grimpette', Math.floor(gr.best)); gr.record = best('grimpette-' + gr.T.id, Math.floor(gr.best)); saveGames(); grInfo(); grBeep(why === 'crash' ? 120 : 300, .5, 'sawtooth', 50, .07); }
+function grEnd(why) { grEngineOff(); gr.mode = 'over'; gr.dead = 0; gr.why = why; grs.games++; grs.flipsAll = (grs.flipsAll || 0) + gr.flips; grs.bestCombo = Math.max(grs.bestCombo || 0, gr.comboMax); grs.coins += gr.coins; grs.total += gr.coins; best('grimpette', Math.floor(gr.best)); gr.record = best('grimpette-' + gr.T.id, Math.floor(gr.best)); saveGames(); grInfo(); grBeep(why === 'crash' ? 120 : 300, .5, 'sawtooth', 50, .07); }
+const GR_COMBO = 240;  // images au sol pour enchaîner la figure suivante (4 secondes)
+function grTricks(spin, air) {  // les figures d'un saut : saltos (avant : le nez plonge, plus dur), vol ; points avant le combo
+  const out = []; let pts = 0;
+  if (Math.abs(spin) > Math.PI * 1.8) { const n = Math.round(Math.abs(spin) / (Math.PI * 2)), fwd = spin > 0;
+    out.push((n === 2 ? 'DOUBLE ' : n === 3 ? 'TRIPLE ' : n > 3 ? n + ' × ' : '') + (fwd ? 'SALTO AVANT' : 'SALTO ARRIÈRE')); pts += (fwd ? 15 : 10) * n; }
+  if (air > 30) { out.push('VOL ' + (air / 60).toFixed(1).replace('.', ',') + ' s'); pts += Math.floor(air / 30); }
+  return {out, pts};
+}
+function grScore(pts, label, x, y) {  // une figure : le combo monte si elle suit la précédente de près, les pièces sont multipliées
+  if (!pts) return 0;
+  gr.combo = gr.comboT > 0 ? Math.min(5, gr.combo + 1) : 1; gr.comboT = GR_COMBO; gr.comboMax = Math.max(gr.comboMax, gr.combo);
+  const tot = pts * gr.combo; gr.coins += tot; for (const p of gr.pops) p.y -= 20;  // les messages précédents montent : rien ne se chevauche
+  gr.pops.push({text: label, x, y: y - 22, t: 70}, {text: '+' + tot + (gr.combo > 1 ? '  COMBO ×' + gr.combo : ''), x, y: y - 12, t: 70, c: gr.combo > 1 ? '#ff8aff' : '#ffd84a'});
+  return tot;
+}
 function grUpdate() {
   const drive = (gr.keys.has('R') ? 1 : 0) - (gr.keys.has('L') ? 1 : 0), d = gr.fuel > 0 ? drive : 0, {T, C, U} = gr;
   gr.boost = gr.keys.has('N') && gr.nitro > 0 && gr.fuel > 0; if (gr.boost) gr.nitro = Math.max(0, gr.nitro - .7);
@@ -454,14 +469,18 @@ function grUpdate() {
   if (!ground) { gr.air++; if (gr.lastAng != null) { let da = h.ang - gr.lastAng; if (da > Math.PI) da -= Math.PI * 2; if (da < -Math.PI) da += Math.PI * 2; gr.spin += da; } }
   if (!ground) { gr.nitro = Math.min(100, gr.nitro + .3); gr.airBest = Math.max(gr.airBest, gr.air); }  // voler remplit le nitro
   if (ground && gr.air) {  // l'atterrissage : salto, vol, et deux roues posées ensemble dans le sens de la pente
-    if (Math.abs(gr.spin) > Math.PI * 1.8) { const n = Math.round(Math.abs(gr.spin) / (Math.PI * 2)); gr.coins += 10 * n; gr.flips += n; gr.nitro = Math.min(100, gr.nitro + 35 * n); gr.pops.push({text: 'SALTO ! +' + 10 * n, x: cx, y: h.y - 14, t: 60}); grBeep(784, .2, 'square', 1175); }
-    if (gr.air > 30) { const n = Math.floor(gr.air / 30); gr.coins += n; gr.pops.push({text: 'VOL ' + (gr.air / 60).toFixed(1).replace('.', ',') + ' s +' + n, x: cx, y: h.y - 10, t: 40}); }
+    const tk = grTricks(gr.spin, gr.air);
+    if (Math.abs(gr.spin) > Math.PI * 1.8) { const n = Math.round(Math.abs(gr.spin) / (Math.PI * 2)); gr.flips += n; if (gr.spin > 0) gr.fwd += n; gr.nitro = Math.min(100, gr.nitro + 35 * n); grBeep(784, .2, 'square', 1175); }
+    if (tk.pts) { grScore(tk.pts, tk.out.join(' + '), cx, h.y); if (gr.combo > 1) setTimeout(() => grBeep(988 + gr.combo * 80, .12, 'square', 1480), 120); }
     gr.landWait = gr.air > 20 ? 6 : 0; gr.air = 0; gr.spin = 0;
   }
   if (gr.landWait && --gr.landWait >= 0 && gr.touch[0] && gr.touch[1]) { gr.landWait = 0; const sl = Math.atan(grSlope(cx, gr.ph, T));
-    if (Math.abs(h.ang - sl) < .3) { gr.landings++; gr.coins += 2; gr.nitro = Math.min(100, gr.nitro + 15); gr.pops.push({text: 'ATTERRISSAGE PARFAIT +2', x: cx, y: h.y - 22, t: 50}); grBeep(660, .08, 'triangle', 990);
+    if (Math.abs(h.ang - sl) < .3) { gr.landings++; gr.coins += 2 * Math.max(1, gr.combo); if (gr.comboT) gr.comboT = GR_COMBO; gr.nitro = Math.min(100, gr.nitro + 15); gr.pops.push({text: 'ATTERRISSAGE PARFAIT +' + 2 * Math.max(1, gr.combo), x: cx, y: h.y - 32, t: 50}); grBeep(660, .08, 'triangle', 990);
       const ux = (gr.b.x - gr.a.x) / C.L, uy = (gr.b.y - gr.a.y) / C.L; for (const w of [gr.a, gr.b]) { w.px -= ux * .5; w.py -= uy * .5; } } }  // un petit élan en prime
   gr.lastAng = h.ang;
+  if (ground && gr.touch[0] && !gr.touch[1]) gr.wheelie++;  // le cabré : seule la roue arrière touche le sol
+  else if (gr.wheelie) { if (gr.wheelie >= 60) { gr.wheelieBest = Math.max(gr.wheelieBest, gr.wheelie); grScore(2 * Math.floor(gr.wheelie / 60), 'CABRÉ ' + (gr.wheelie / 60).toFixed(1).replace('.', ',') + ' s', cx, h.y); grBeep(700, .1, 'triangle', 1050); } gr.wheelie = 0; }
+  if (ground && !gr.wheelie && gr.comboT > 0 && --gr.comboT === 0) gr.combo = 0;
   if (h.y > grGround(h.x, gr.ph, T) - 2) return grEnd('crash');
   // essence et pièces à ramasser
   for (const c of gr.cans) if (!c.got && Math.abs(c.x - cx) < 14 && Math.abs(grGround(c.x, gr.ph, T) - 8 - cy) < 22) { c.got = 1; gr.fuel = 100; gr.pops.push({text: 'PLEIN !', x: c.x, y: grGround(c.x, gr.ph, T) - 20, t: 40}); grBeep(523, .08); setTimeout(() => grBeep(784, .12), 70); }
@@ -580,7 +599,9 @@ function grDraw() {
   for (const c of gr.coinRows) if (!c.got) { const x = Math.round(c.x - cx), y = Math.round(grGround(c.x, gr.ph, T) - cy) - 10; if (x > -6 && x < W + 6) { const f = (gr.tick >> 3) % 4, w = [5, 3, 1, 3][f]; px(g, '#8a6a10', x - (w >> 1) - 1, y - 3, w + 2, 7); px(g, c.v > 1 ? (c.v > 2 ? '#7ae0ff' : '#c8c8d8') : '#ffd84a', x - (w >> 1), y - 2, w, 5); } }
   for (const f of gr.flame) px(g, f.t > 9 ? '#ffffff' : f.t > 5 ? '#ffd84a' : '#ff6a1a', f.x - cx - 1, f.y - cy - 1, f.t > 9 ? 3 : 2, 2);
   grDrawCar(g, gr.C, gr.a, gr.b, cx, cy);
-  for (const p of gr.pops) pxFont(g, p.text, p.x - cx, p.y - cy, '#ffd84a', 8, 'center');
+  for (const p of gr.pops) { const hw = PXK.layout(p.text).w / 2 + 2; pxFont(g, p.text, Math.max(hw, Math.min(W - hw, p.x - cx)), p.y - cy, p.c || '#ffd84a', 8, 'center'); }  // toujours en entier dans l'écran
+  if (gr.wheelie > 30 && gr.mode === 'play') pxFont(g, 'CABRÉ ' + (gr.wheelie / 60).toFixed(1).replace('.', ','), (gr.a.x + gr.b.x) / 2 - cx, Math.min(gr.a.y, gr.b.y) - cy - 26, '#7ee07a', 8, 'center');
+  if (gr.combo > 0 && gr.comboT > 0 && gr.mode === 'play') { pxFont(g, 'COMBO ×' + gr.combo, 4, HUD + 10, '#ff8aff', 8); px(g, '#2a2236', 4, HUD + 13, 44, 2); px(g, '#ff8aff', 4, HUD + 13, Math.round(44 * gr.comboT / GR_COMBO), 2); }
   // le haut : distance, pièces, jauge d'essence (rouge quand elle est presque vide)
   px(g, '#0e0a14', 0, 0, W, HUD);
   pxFont(g, Math.floor(gr.best) + ' m', 4, 9, '#ffffff', 8);
@@ -588,14 +609,14 @@ function grDraw() {
   const fw = 50, low = gr.fuel < 25; pxFont(g, 'ESSENCE', W - fw - 50, 9, low && (gr.tick >> 4) % 2 ? '#ff4a3a' : '#a898b8', 8); px(g, '#2a2236', W - fw - 4, 3, fw, 6); px(g, low ? '#ff4a3a' : '#7ee07a', W - fw - 4, 3, Math.round(fw * gr.fuel / 100), 6);
   if (W >= 280) { const nx = W - 2 * fw - 108; pxFont(g, 'NITRO', nx - 38, 9, gr.boost ? '#ffd84a' : '#a898b8', 8); px(g, '#2a2236', nx, 3, fw, 6); px(g, gr.nitro >= 100 && (gr.tick >> 3) % 2 ? '#ffffff' : '#5ac8ff', nx, 3, Math.round(fw * gr.nitro / 100), 6); }
   else { px(g, '#2a2236', 112, 3, 20, 6); px(g, '#5ac8ff', 112, 3, Math.round(20 * gr.nitro / 100), 6); }
-  if (gr.mode === 'ready') gameText(g, W, [[T.name + ' · ' + gr.C.name, '#ffd84a', 12], ['→ : accélérer   ← : freiner', '#ffffff'], ['Espace : nitro · en l’air, → ← font pencher', '#b8b0c8'], ['Tremplins : vole, fais des saltos, atterris à plat', '#8ad8ff']], 46);
+  if (gr.mode === 'ready') gameText(g, W, [[T.name + ' · ' + gr.C.name, '#ffd84a', 12], ['→ : accélérer   ← : freiner', '#ffffff'], ['Espace : nitro · en l’air, → ← font pencher', '#b8b0c8'], ['Tremplins : vole, fais des saltos, atterris à plat', '#8ad8ff'], ['Enchaîne saltos et cabrés : combo ×5', '#ff8aff']], 42);
   if (gr.mode === 'pause') gameText(g, W, [['PAUSE', '#ffd84a', 12], ['Entrée : reprendre', '#b8b0c8']], 60);
-  if (gr.mode === 'over' && gr.dead > 40) { grEngineOff(); gameText(g, W, [[gr.why === 'crash' ? 'SUR LE TOIT !' : 'PLUS D’ESSENCE !', '#ff6a3a', 12], [Math.floor(gr.best) + ' m, ' + gr.coins + ' pièces', '#ffffff'], [gr.flips + ' salto' + (gr.flips > 1 ? 's' : '') + ' · ' + gr.landings + ' atterrissage' + (gr.landings > 1 ? 's' : '') + ' parfait' + (gr.landings > 1 ? 's' : '') + ' · vol ' + (gr.airBest / 60).toFixed(1).replace('.', ',') + ' s', '#8ad8ff'], [gr.record ? 'NOUVEAU RECORD !' : 'Record ' + (games.best['grimpette-' + T.id] || 0) + ' m', '#7ee07a'], [gr.dead > 70 ? 'Espace : garage' : '', '#b8b0c8']], 44); }
+  if (gr.mode === 'over' && gr.dead > 40) { grEngineOff(); gameText(g, W, [[gr.why === 'crash' ? 'SUR LE TOIT !' : 'PLUS D’ESSENCE !', '#ff6a3a', 12], [Math.floor(gr.best) + ' m, ' + gr.coins + ' pièces', '#ffffff'], [gr.flips + ' salto' + (gr.flips > 1 ? 's' : '') + ' · ' + gr.landings + ' atterrissage' + (gr.landings > 1 ? 's' : '') + ' parfait' + (gr.landings > 1 ? 's' : '') + ' · vol ' + (gr.airBest / 60).toFixed(1).replace('.', ',') + ' s', '#8ad8ff'], ...(gr.comboMax > 1 || gr.wheelieBest ? [['combo max ×' + gr.comboMax + (gr.wheelieBest ? ' · cabré ' + (gr.wheelieBest / 60).toFixed(1).replace('.', ',') + ' s' : ''), '#ff8aff']] : []), [gr.record ? 'NOUVEAU RECORD !' : 'Record ' + (games.best['grimpette-' + T.id] || 0) + ' m', '#7ee07a'], [gr.dead > 70 ? 'Espace : garage' : '', '#b8b0c8']], 44); }
   if (gr.mode !== 'play' && gr.mode !== 'over') grEngineOff();
   if (gr.tick % 20 === 0) g.canvas.setAttribute('aria-label', 'Grimpette : ' + Math.floor(gr.best) + ' mètres, ' + gr.coins + ' pièces, essence ' + Math.round(gr.fuel) + ' %' + (gr.mode === 'over' ? ', fini : ' + (gr.why === 'crash' ? 'sur le toit' : 'plus d’essence') : '') + '.');
 }
 function grInfo() {
-  $('grStats').replaceChildren(...[['Record', (games.best.grimpette || 0) + ' m'], ['Pièces', grs.coins], ['Parties', grs.games]].flatMap(([a, b]) => [el('span', '', a), el('b', '', String(b))]));
+  $('grStats').replaceChildren(...[['Record', (games.best.grimpette || 0) + ' m'], ['Pièces', grs.coins], ['Saltos', grs.flipsAll || 0], ['Meilleur combo', '×' + (grs.bestCombo || 0)], ['Parties', grs.games]].flatMap(([a, b]) => [el('span', '', a), el('b', '', String(b))]));
 }
 document.addEventListener('keydown', e => {
   if (!view.classList.contains('on') || !gr || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
@@ -651,12 +672,18 @@ function grCheck() {  // vérification : sur chaque terrain avec chaque voiture,
     let air = 0, mx = 0; for (let t = 0; t < 300 && gr.mode === 'play'; t++) { gr.keys.clear(); gr.keys.add('R'); grUpdate(); if (gr.air > mx) mx = gr.air; } air = mx; gr.flightTest = air; if (air < 30) bad.push('tremplin : ' + air + ' images en l’air'); }
   { const run = n => { grs.car = 0; gr = null; grNew('play'); gr.ph = [5, 5, 5, 5]; if (n) gr.nitro = 100; for (let t = 0; t < 240; t++) { gr.keys.clear(); gr.keys.add('R'); if (n) gr.keys.add('N'); grUpdate(); } return gr.best; }; const a = run(0), b = run(1); if (!(b > a + 8)) bad.push('nitro : ' + Math.round(a) + ' → ' + Math.round(b) + ' m'); }
   if (new Set(GR_CARS.map(c => c.eng.join())).size !== GR_CARS.length) bad.push('moteurs pareils');
+  // les figures : double salto avant + vol, salto arrière ; deux figures à la suite font un combo ×2 ; au sol, le combo s'éteint
+  { const t1 = grTricks(Math.PI * 4.1, 45), t2 = grTricks(-Math.PI * 2.05, 10);
+    if (t1.out.join() !== 'DOUBLE SALTO AVANT,VOL 0,8 s' || t1.pts !== 31) bad.push('figures : ' + t1.out + ' ' + t1.pts);
+    if (t2.out.join() !== 'SALTO ARRIÈRE' || t2.pts !== 10) bad.push('salto arrière : ' + t2.out + ' ' + t2.pts);
+    gr = null; grNew('play'); grScore(10, 'a', 0, 0); grScore(10, 'b', 0, 0); if (gr.combo !== 2 || gr.coins !== 30) bad.push('combo : ×' + gr.combo + ', ' + gr.coins + ' pièces');
+    for (let i = 0; i < 6; i++) grScore(1, 'c', 0, 0); if (gr.combo !== 5) bad.push('combo plafond : ×' + gr.combo); }
   grs.terr = 0; grs.car = 0;
   Object.assign(grs, JSON.parse(keepS)); for (const k of Object.keys(games.best)) if (k.startsWith('grimpette') && !(k in keepB)) delete games.best[k]; Object.assign(games.best, keepB); gr = keep; grMute = false;
   return bad.join(' | ') || 'ok';
 }
 { const c = grCheck(); console.assert(c === 'ok', 'grimpette', c); }
-$('grCanvas').__gr = {st: () => gr, check: grCheck, ramp: x => grRamp(x, gr.ph, gr.T), ground: x => grGround(x, gr.ph, gr.T), eng: () => grEng && {fq: grEng.fq, car: grEng.car}};
+$('grCanvas').__gr = {st: () => gr, check: grCheck, score: (p, l) => grScore(p, l, (gr.a.x + gr.b.x) / 2, gr.a.y), ramp: x => grRamp(x, gr.ph, gr.T), ground: x => grGround(x, gr.ph, gr.T), eng: () => grEng && {fq: grEng.fq, car: grEng.car}};
 ctx.onOpen(() => {
   if (!gr || !gr.g) { grNew('garage'); gr.g = $('grCanvas').getContext('2d'); }
   gameLoop(gr, 'grimpette', grUpdate, grDraw); grInfo();

@@ -17,6 +17,9 @@ module.exports = async ({ pj, sleep }) => {
   let air = 0, shotAir = false; for (let i = 0; i < 40; i++) { await sleep(50); const a = await C('return gr.air;'); air = Math.max(air, a); if (a > 14 && !shotAir) { shotAir = true; await shot('2-vol'); } }
   await key(' ', 'keyup'); await key('ArrowRight', 'keyup');
   if (air < 20) throw new Error('le tremplin devait faire voler la voiture : ' + air + ' images');
+  // les figures (1.3.0) : deux figures à la suite font un combo ×2, affiché sous la barre du haut
+  const cb = await C("gr.comboT = 0; T.score(31, 'DOUBLE SALTO AVANT + VOL 0,8 s'); T.score(10, 'SALTO ARRIÈRE'); return gr.combo;"); await sleep(150); await shot('2b-combo');
+  if (cb !== 2) throw new Error('le combo devait passer à ×2 : ' + cb);
   await key('p'); await sleep(300); const off = await C('return T.eng();'); if (off && off.fq) throw new Error('le moteur devait se taire en pause');
   await key('p');
   await C(`gr.mode = 'play'; gr.fuel = 0; gr.keys.clear(); return 0;`); await sleep(2500); await shot('3-fin');
@@ -31,5 +34,5 @@ module.exports = async ({ pj, sleep }) => {
   if (process.env.NEO_FIT_LOG) console.log('FIT', JSON.stringify(L));
   if (L.bottom > L.wh + 1 || L.sw > L.ww + 1 || L.h < 260) throw new Error('la zone de jeu dépasse la fenêtre ou reste petite : ' + JSON.stringify(L));
   await pj(`document.getElementById('grNew').click(), 0`); await sleep(200);
-  return 'vérification ok · garage · tremplin : ' + (air / 60).toFixed(1) + ' s en l\'air · nitro · moteur ' + Math.round(eng.fq) + ' Hz, muet en pause · scène ' + W + ' px · plein écran · ' + L.h + ' px dans ' + L.ww + '×' + L.wh;
+  return 'vérification ok · garage · tremplin : ' + (air / 60).toFixed(1) + ' s en l\'air · combo ×2 · nitro · moteur ' + Math.round(eng.fq) + ' Hz, muet en pause · scène ' + W + ' px · plein écran · ' + L.h + ' px dans ' + L.ww + '×' + L.wh;
 };

@@ -24,10 +24,18 @@ Terrains, cars and upgrades are bought with the **coins** picked up on the road.
 
 - **Ramps**: after 90 m, wooden ramps rise steeper and steeper then drop away; at speed, the vehicle takes off far. Short bumps in the hills also make you jump on fast descents.
 - In the air the vehicle **glides** a little; → lifts the nose, ← lowers it.
-- **Flying pays**: a coin per half second in the air, 10 per **flip**, and 2 for a **perfect landing** (both wheels down together, along the slope), which also gives a small boost.
+- **Flying pays**: a coin per half second in the air, 10 to 15 per **flip** (see Tricks and combos), and 2 for a **perfect landing** (both wheels down together, along the slope), which also gives a small boost.
 - **Nitro** (**Space** or **Shift**): a push that makes you fly along, even in the air. Its blue gauge fills as you fly, flip and land flat.
 - **The engine** has its own sound for each vehicle and rises with speed, throttle and nitro.
 - **Full screen**: the button of the same name; Escape to leave it. On a wide screen, the scene widens to see further.
+
+## Tricks and combos (new in 1.3.0)
+
+- **Backflip** (the nose lifts and goes all the way round, → in the air): 10 coins per turn. **Front flip** (the nose dives, ← in the air), harder: 15 coins per turn. Two or three turns in a row make a **DOUBLE** or **TRIPLE** flip.
+- **Air time**: a coin per half second in the air, counted with the flips of the same jump.
+- **Wheelie**: riding more than a second on the back wheel alone (accelerating lifts the nose) gives 2 coins per second; the time is shown above the vehicle.
+- **Combo**: a trick done less than 4 seconds (on the ground) after the previous one raises the combo, up to **×5**; every coin of the trick is multiplied, and so is the perfect landing. The combo and its purple gauge are shown under the top bar; a perfect landing refills the gauge.
+- Trick messages stack above the vehicle without overlapping. The end of the game gives your best combo and longest wheelie; the side column keeps your total flips and best combo.
 
 ## How it works
 
