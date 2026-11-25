@@ -299,6 +299,9 @@ export default async function (ctx) {
   const best = (k, v) => { const b = games.best[k]; if (v > (b ?? 0)) {  // un score nul n'est jamais un record
     games.best[k] = v; saveGames(); return true; } return false; };
   const gstore = (k, init) => (games[k] ??= init);
+  // les trophées de NeoDex (3.4.8 et plus) : succès et records déclarés dans plugin.json ; sur un NeoDex plus ancien, rien ne se passe
+  const trophy = id => { ctx.games?.unlock(id).catch(() => {}); };
+  const trophyRecord = (id, v) => { if (v != null && Number.isFinite(+v)) ctx.games?.record(id, +v).catch(() => {}); };
 function gameLoop(st, appKey, update, draw) {
   cancelAnimationFrame(st.raf);
   const STEP = 1000 / 60; let acc = 0, last = performance.now();
@@ -616,6 +619,7 @@ function grDraw() {
   if (gr.tick % 20 === 0) g.canvas.setAttribute('aria-label', 'Grimpette : ' + Math.floor(gr.best) + ' mètres, ' + gr.coins + ' pièces, essence ' + Math.round(gr.fuel) + ' %' + (gr.mode === 'over' ? ', fini : ' + (gr.why === 'crash' ? 'sur le toit' : 'plus d’essence') : '') + '.');
 }
 function grInfo() {
+  setTimeout(grTrophies);
   $('grStats').replaceChildren(...[['Record', (games.best.grimpette || 0) + ' m'], ['Pièces', grs.coins], ['Saltos', grs.flipsAll || 0], ['Meilleur combo', '×' + (grs.bestCombo || 0)], ['Parties', grs.games]].flatMap(([a, b]) => [el('span', '', a), el('b', '', String(b))]));
 }
 document.addEventListener('keydown', e => {
@@ -684,6 +688,13 @@ function grCheck() {  // vérification : sur chaque terrain avec chaque voiture,
 }
 { const c = grCheck(); console.assert(c === 'ok', 'grimpette', c); }
 $('grCanvas').__gr = {st: () => gr, check: grCheck, score: (p, l) => grScore(p, l, (gr.a.x + gr.b.x) / 2, gr.a.y), ramp: x => grRamp(x, gr.ph, gr.T), ground: x => grGround(x, gr.ph, gr.T), eng: () => grEng && {fq: grEng.fq, car: grEng.car}};
+// les trophées, tirés des statistiques et des records gardés (aussi à l'ouverture : ce qui a été fait avant compte)
+function grTrophies() {
+  const b = games.best.grimpette, t = grs.owned.terr.length, c = grs.owned.car.length, sig = [b, grs.games, grs.flipsAll, grs.total, t, c].join(); if (sig === grTrophies.sig) return; grTrophies.sig = sig;
+  trophyRecord('distance', b || null);
+  if (grs.games >= 1) trophy('premier'); if (b >= 500) trophy('m500'); if (b >= 1000) trophy('m1000'); if (b >= 3000) trophy('m3000');
+  if (grs.flipsAll >= 100) trophy('saltos'); if (grs.total >= 10000) trophy('pieces'); if (t >= 2) trophy('monde'); if (t >= GR_TERR.length) trophy('mondes'); if (c >= GR_CARS.length) trophy('garage');
+}
 ctx.onOpen(() => {
   if (!gr || !gr.g) { grNew('garage'); gr.g = $('grCanvas').getContext('2d'); }
   gameLoop(gr, 'grimpette', grUpdate, grDraw); grInfo();

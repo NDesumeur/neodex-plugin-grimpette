@@ -1,7 +1,7 @@
 {
   "id": "neodex.grimpette",
   "name": "Grimpette",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": "NDesumeur",
   "description": "Jeu de conduite : un véhicule sur des collines sans fin, avec une vraie physique. Au garage, choisis parmi 13 mondes (prairie, désert, neige, lune, forêt, plage, jungle, marais, canyon, volcan, Mars, cristaux, ville la nuit) et 12 véhicules (Jeep, Monster, Bolide, Quad, Moto, Buggy, Tracteur, Van, Camion, Rallye, Rover, Hot-rod), et améliore moteur, pneus et réservoir avec tes pièces. En course, accélère, freine, lance le nitro, décolle des tremplins et des bosses, fais des saltos et atterris à plat : le vol remplit le nitro et rapporte des pièces. Chaque véhicule a le son de son moteur. Attention au toit. Un record par monde. Scène plus large sur grand écran, plein écran. Figures : salto avant ou arrière, double, triple, cabré, et combos jusqu'à ×5 quand tu les enchaînes.",
   "icon": "icon.png",
@@ -22,5 +22,62 @@
   "sdk": "2.1.0",
   "permissions": [
     "storage"
+  ],
+  "succes": [
+    {
+      "id": "premier",
+      "nom": "Contact !",
+      "texte": "Finir une première course"
+    },
+    {
+      "id": "m500",
+      "nom": "Bon pilote",
+      "texte": "Rouler 500 mètres d'un coup"
+    },
+    {
+      "id": "m1000",
+      "nom": "Grand voyageur",
+      "texte": "Rouler 1 000 mètres d'un coup"
+    },
+    {
+      "id": "m3000",
+      "nom": "Bout du monde",
+      "texte": "Rouler 3 000 mètres d'un coup",
+      "cache": true
+    },
+    {
+      "id": "saltos",
+      "nom": "Cascadeur",
+      "texte": "Faire 100 saltos en tout"
+    },
+    {
+      "id": "pieces",
+      "nom": "Tirelire",
+      "texte": "Ramasser 10 000 pièces en tout"
+    },
+    {
+      "id": "monde",
+      "nom": "Nouveau monde",
+      "texte": "Acheter un nouveau terrain"
+    },
+    {
+      "id": "mondes",
+      "nom": "Tous les mondes",
+      "texte": "Acheter tous les terrains"
+    },
+    {
+      "id": "garage",
+      "nom": "Garage plein",
+      "texte": "Acheter tous les véhicules"
+    }
+  ],
+  "records": [
+    {
+      "id": "distance",
+      "nom": "Plus longue course",
+      "sens": "haut",
+      "format": "nombre",
+      "unite": "m"
+    }
   ]
 }
